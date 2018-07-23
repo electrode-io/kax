@@ -82,17 +82,29 @@ export class KaxTask<T> {
   ): Promise<T> {
     try {
       const result: T = await task
-      this._attachedLine.text = `${logSymbols.success} ${successMsg ||
-        this._attachedLine.text.slice(2)}`
+      this.succeed(successMsg)
       return result
     } catch (e) {
-      this._attachedLine.text = `${logSymbols.error} ${errorMsg ||
-        this._attachedLine.text.slice(2)}`
+      this.fail(errorMsg)
       throw e
-    } finally {
-      clearInterval(this._attachedLine.timer)
-      this.emitter.emit('completed')
     }
+  }
+
+  public succeed(msg?: string) {
+    this._attachedLine.text = `${logSymbols.success} ${msg ||
+      this._attachedLine.text.slice(2)}`
+    this.completed()
+  }
+
+  public fail(msg?: string) {
+    this._attachedLine.text = `${logSymbols.error} ${msg ||
+      this._attachedLine.text.slice(2)}`
+    this.completed()
+  }
+
+  public completed() {
+    clearInterval(this._attachedLine.timer)
+    this.emitter.emit('completed')
   }
 }
 export class KaxRenderer {

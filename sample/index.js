@@ -22,6 +22,9 @@ const main = async () => {
   await kax.task('delay 4000').run(delay(4000))
   await kax.task('subtasks').run(subtask())
   await kax.task('delay 5000').run(delay(5000))
+  const custom = kax.task('Manually controlled task')
+  await delay(3000)
+  custom.succeed('Done !')
 }
 
-main().then(() => console.log('done'))
+main().then(() => {})
