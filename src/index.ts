@@ -1,73 +1,21 @@
-const logUpdate = require('log-update')
-const cliSpinners = require('cli-spinners')
-const logSymbols = require('log-symbols')
-const indentString = require('indent-string')
+import logUpdate from 'log-update'
+import cliSpinners from 'cli-spinners'
+import logSymbols from 'log-symbols'
+import indentString from 'indent-string'
+import EventEmitter from 'events'
 
-const EventEmitter = require('events')
+class KaxLineEventEmitter extends EventEmitter {}
+class KaxTaskEventEmitter extends EventEmitter {}
 
-class TaskEventEmitter extends EventEmitter {}
-
-export interface WhirlCompletable {
-  readonly isComplete: boolean
-}
-
-export class WhirlTask implements WhirlCompletable {
-  private timer: NodeJS.Timer
-  private frameIdx: number
-  private _isComplete: boolean
-  public currentText: string
-
-  constructor(msg: string) {
-    this._isComplete = false
-    this.frameIdx = 0
-  }
-
-  public get isComplete(): boolean {
-    return this._isComplete
-  }
-
-  public start(msg: string, spinner = 'dots'): WhirlTask {
-    this.currentText = msg
-    this.timer = setInterval(() => {
-      this.frameIdx = ++this.frameIdx % cliSpinners[spinner].frames.length
-      const frame = cliSpinners.dots.frames[this.frameIdx]
-      this.updateCurrentText(`${frame} ${msg}`)
-    }, cliSpinners.dots.interval)
-    return this
-  }
-
-  public success(msg?: string): WhirlTask {
-    clearInterval(this.timer)
-    this._isComplete = true
-
-    this.updateCurrentText(`${logSymbols.success} ${msg}`)
-
-    return this
-  }
-
-  public fail(msg?: string): WhirlTask {
-    clearInterval(this.timer)
-    this._isComplete = true
-    this.updateCurrentText(`${logSymbols.fail} ${msg}`)
-    return this
-  }
-
-  private updateCurrentText(text: string) {
-    this.currentText = text
-  }
-}
-
-class WhirlLineEventEmitter extends EventEmitter {}
-
-export class WhirlLine {
+export class KaxLine {
   private _text: string
-  public readonly emitter: WhirlLineEventEmitter
+  public readonly emitter: KaxLineEventEmitter
   public readonly indent: number
 
   constructor(text: string, indent: number) {
     this._text = text
     this.indent = indent
-    this.emitter = new WhirlLineEventEmitter()
+    this.emitter = new KaxLineEventEmitter()
   }
 
   public get text(): string {
@@ -80,37 +28,90 @@ export class WhirlLine {
   }
 }
 
-/* public bottomMostNonCompletedTask(curTaskNode: TaskNode): TaskNode | void {
-    const lastChildNode =
-      curTaskNode.children.length > 0 &&
-      curTaskNode.children[curTaskNode.children.length - 1]
-    if (lastChildNode && !lastChildNode.task.isComplete) {
-      if (lastChildNode.children.length > 0) {
-        return this.bottomMostNonCompletedTask(lastChildNode)
-      } else {
-        return lastChildNode
-      }
-    } else {
-      return curTaskNode.task.isComplete ? undefined : curTaskNode
+export class KaxInfoLine extends KaxLine {
+  constructor(text: string, indent: number) {
+    super(`${logSymbols.info} ${text}`, indent)
+  }
+}
+
+export class KaxErrorLine extends KaxLine {
+  constructor(text: string, indent: number) {
+    super(`${logSymbols.error} ${text}`, indent)
+  }
+}
+
+export class KaxWarnLine extends KaxLine {
+  constructor(text: string, indent: number) {
+    super(`${logSymbols.warning} ${text}`, indent)
+  }
+}
+
+export class KaxTaskLine extends KaxLine {
+  public readonly timer: NodeJS.Timer
+  private _curFrameIdx: number
+
+  constructor(text: string, indent: number) {
+    super(`${cliSpinners.dots.frames[0]} ${text}`, indent)
+    this._curFrameIdx = 0
+    this.timer = setInterval(() => {
+      this._curFrameIdx = ++this._curFrameIdx % cliSpinners.dots.frames.length
+      const frame = cliSpinners.dots.frames[this._curFrameIdx]
+      this.text = `${frame} ${this.text.slice(2)}`
+    }, cliSpinners.dots.interval)
+  }
+}
+
+export class KaxTask<T> {
+  private _attachedLine: KaxTaskLine
+  public readonly emitter: KaxTaskEventEmitter
+
+  public constructor(attachedLine: KaxTaskLine) {
+    this._attachedLine = attachedLine
+    this.emitter = new KaxTaskEventEmitter()
+  }
+
+  public async run(
+    task: Promise<T>,
+    {
+      errorMsg,
+      successMsg,
+    }: {
+      errorMsg?: string
+      successMsg?: string
+    } = {}
+  ): Promise<T> {
+    try {
+      const result: T = await task
+      this._attachedLine.text = `${logSymbols.success} ${successMsg ||
+        this._attachedLine.text.slice(2)}`
+      return result
+    } catch (e) {
+      this._attachedLine.text = `${logSymbols.error} ${errorMsg ||
+        this._attachedLine.text.slice(2)}`
+      throw e
+    } finally {
+      clearInterval(this._attachedLine.timer)
+      this.emitter.emit('completed')
     }
-  }*/
+  }
+}
+export class KaxRenderer {
+  private _lines: KaxLine[]
 
-export class WhirlRenderer {
-  private _lines: WhirlLine[]
-
-  constructor(lines: WhirlLine[] = []) {
+  constructor(lines: KaxLine[] = []) {
     this._lines = lines
   }
 
-  public addLine(line: WhirlLine, indent: number) {
+  public addLine(line: KaxLine) {
     this._lines.push(line)
+    this.render()
     line.emitter.on('textUpdated', () => this.render())
   }
 
-  buildCompositeText(arr: WhirlLine[], acc: string, level: number) {
+  buildCompositeText(arr: KaxLine[], acc: string, level: number) {
     let txt = ''
-    for (const whirlLine of arr) {
-      txt += `${indentString(whirlLine.text, whirlLine.indent * 2)}\n`
+    for (const kaxLine of arr) {
+      txt += `${indentString(kaxLine.text, kaxLine.indent * 2)}\n`
     }
     return txt
   }
@@ -120,93 +121,41 @@ export class WhirlRenderer {
   }
 }
 
-export const last = (arr: any[]) => arr[arr.length - 1]
-
-export class Whirl {
-  private renderer: WhirlRenderer
-  private completables: WhirlCompletable[]
+export default class Kax {
+  private renderer: KaxRenderer
+  private curIndent: number
 
   public constructor() {
-    this.renderer = new WhirlRenderer()
-    this.completables = []
+    this.renderer = new KaxRenderer()
+    this.curIndent = 0
   }
 
-  // [complete:true, [complete:true, complete:true], complete: false, [complete: true, complet: false, [ complet:true ]]
-  // [complete: true, complete:true, complete:true]
-
-  public add(
-    arr: any[],
-    completable: WhirlCompletable,
-    indent: number
-  ): number {
-    for (const entry of arr) {
-      if (Array.isArray(entry)) {
-        if (entry.some(e => !e.isComplete)) {
-          return this.add(entry, completable, indent + 2)
-        }
-      } else {
-        if (!entry.isComplete) {
-          arr.push([completable])
-          return indent
-        }
-      }
-    }
-    return indent
+  public info(msg: string): Kax {
+    const line = new KaxInfoLine(msg, this.curIndent)
+    this.renderer.addLine(line)
+    return this
   }
 
-  public display(msg: string): WhirlAction {
-    const whirLine = new WhirlLine()
+  public warn(msg: string): Kax {
+    const line = new KaxWarnLine(msg, this.curIndent)
+    this.renderer.addLine(line)
+    return this
   }
 
-  public async run<T>({
-    task,
-    msg,
-    errorMsg,
-    successMsg,
-  }: {
-    task: Promise<T>
-    msg: string
-    errorMsg?: string
-    successMsg?: string
-  }): Promise<T> {
-    const whirlTask = new WhirlTask().start(msg)
-    this.renderer.addTask(whirlTask)
-    try {
-      const result: T = await task
-      whirlTask.success(successMsg || msg)
-      return result
-    } catch (e) {
-      whirlTask.fail(errorMsg || msg)
-      throw e
-    }
+  public error(msg: string) {
+    const line = new KaxErrorLine(msg, this.curIndent)
+    this.renderer.addLine(line)
+    return this
+  }
+
+  public task<T>(msg: string): KaxTask<T> {
+    const line = new KaxTaskLine(msg, this.curIndent)
+    const task = new KaxTask<T>(line)
+    this.renderer.addLine(line)
+    this.curIndent++
+    task.emitter.on('completed', () => this.curIndent--)
+    return task
   }
 }
 
-export const whirl = new Whirl()
-
-const delay = (d: number) =>
-  new Promise((resolve, reject) => {
-    setTimeout(() => {
-      resolve()
-    }, d)
-  })
-
-const subtask = async () => {
-  await whirl.run({ task: delay(2000), msg: 'This is a sub test !' })
-  await whirl.run({ task: delay(2000), msg: 'This is another sub test !' })
-}
-
-const main = async () => {
-  await whirl.run({ task: delay(4000), msg: 'This is a test !' })
-  await whirl.run({
-    task: subtask(),
-    msg: 'This is another test !',
-  })
-  await whirl.run({ task: delay(1000), msg: 'This is yet another test !' })
-
-  // await whirl.run('msg').task(tsk)
-  //              |_> to create message and entry first
-  //                         |_task
-}
-
-main().then(() => console.log('done'))
+export const kax = new Kax()

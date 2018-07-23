@@ -1,8 +1,22 @@
 {
-  "name": "whirl",
+  "name": "kax",
   "version": "1.0.0",
+  "description": "A simple logger with spinners",
   "main": "dist/index.js",
   "license": "Apache-2.0",
+  "keywords": [
+    "CLI",
+    "logger",
+    "spinner"
+  ],
+  "author": {
+    "name": "Benoit Lemaire",
+    "email": "lemaireb@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/belemaire/kax.git"
+  },
   "devDependencies": {
     "@types/chai": "^4.1.4",
     "@types/mocha": "^5.2.5",
@@ -24,5 +38,8 @@
     "indent-string": "^3.2.0",
     "log-symbols": "^2.2.0",
     "log-update": "^2.3.0"
+  },
+  "engines": {
+    "node": ">=6"
   }
 }

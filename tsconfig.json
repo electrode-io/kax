@@ -11,7 +11,7 @@
     "strictNullChecks": true,
     "rootDir": "./src",
     "outDir": "dist"
-  },    
+  },
   "include": ["**/*"],
-  "exclude": ["node_modules", "**/*.spec.ts", "test", "dist"]
+  "exclude": ["node_modules", "**/*.spec.ts", "test", "dist", "sample"]
 }
