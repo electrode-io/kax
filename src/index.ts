@@ -133,7 +133,7 @@ export class KaxRenderer {
   }
 }
 
-export default class Kax {
+export class Kax {
   private renderer: KaxRenderer
   private curIndent: number
 
@@ -170,4 +170,4 @@ export default class Kax {
   }
 }
 
-export const kax = new Kax()
+export default new Kax()

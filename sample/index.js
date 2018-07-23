@@ -1,5 +1,6 @@
-const kax = require('../dist').kax
+const kax = require('../dist/index').default
 
+console.log(kax)
 const delay = d =>
   new Promise((resolve, reject) => {
     setTimeout(() => {
