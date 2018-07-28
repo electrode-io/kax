@@ -1,48 +1,99 @@
+import chalk from 'chalk'
 import logUpdate from 'log-update'
 import cliSpinners from 'cli-spinners'
 import logSymbols from 'log-symbols'
 import indentString from 'indent-string'
 import EventEmitter from 'events'
+import os from 'os'
 
 class KaxLineEventEmitter extends EventEmitter {}
 class KaxTaskEventEmitter extends EventEmitter {}
 
 export class KaxLine {
   private _text: string
-  public readonly emitter: KaxLineEventEmitter
   public readonly indent: number
+  public readonly emitter: KaxLineEventEmitter
 
-  constructor(text: string, indent: number) {
-    this._text = text
-    this.indent = indent
+  constructor(
+    text: string,
+    {
+      color,
+      symbol,
+      symbolizeMultiLine,
+      indent,
+    }: {
+      color?: string
+      symbol?: string
+      symbolizeMultiLine?: boolean
+      indent: number
+    }
+  ) {
     this.emitter = new KaxLineEventEmitter()
+    this.indent = indent
+    this.setText(text, { color, symbol, symbolizeMultiLine })
   }
 
   public get text(): string {
     return this._text
   }
 
-  public set text(value: string) {
-    this._text = value
+  public setText(
+    text: string,
+    {
+      color,
+      symbol,
+      symbolizeMultiLine,
+    }: { color?: string; symbol?: string; symbolizeMultiLine?: boolean }
+  ) {
+    if (color) {
+      text = colorizeText(color, text)
+    }
+    if (symbol && symbolizeMultiLine) {
+      text = symbolizeText(symbol, text)
+    }
+    this._text = text
     this.emitter.emit('textUpdated')
   }
 }
 
+const colorizeText = (color: string, text: string) => chalk[color](text)
+
+const symbolizeText = (symbol: string, text: string) =>
+  text
+    .split(os.EOL)
+    .map(l => `${symbol} ${l}`)
+    .join(os.EOL)
+
 export class KaxInfoLine extends KaxLine {
-  constructor(text: string, indent: number) {
-    super(`${logSymbols.info} ${text}`, indent)
+  constructor(text: string, indent: number, opts: KaxOptions) {
+    super(text, {
+      color: opts.colorScheme.info,
+      symbol: logSymbols.info,
+      symbolizeMultiLine: opts.symbolizeMultiLine,
+      indent,
+    })
   }
 }
 
 export class KaxErrorLine extends KaxLine {
-  constructor(text: string, indent: number) {
-    super(`${logSymbols.error} ${text}`, indent)
+  constructor(text: string, indent: number, opts: KaxOptions) {
+    super(text, {
+      color: opts.colorScheme.error,
+      symbol: logSymbols.error,
+      symbolizeMultiLine: opts.symbolizeMultiLine,
+      indent,
+    })
   }
 }
 
 export class KaxWarnLine extends KaxLine {
-  constructor(text: string, indent: number) {
-    super(`${logSymbols.warning} ${text}`, indent)
+  constructor(text: string, indent: number, opts: KaxOptions) {
+    super(text, {
+      color: opts.colorScheme.warning,
+      symbol: logSymbols.warning,
+      symbolizeMultiLine: opts.symbolizeMultiLine,
+      indent,
+    })
   }
 }
 
@@ -50,13 +101,22 @@ export class KaxTaskLine extends KaxLine {
   public readonly timer: NodeJS.Timer
   private _curFrameIdx: number
 
-  constructor(text: string, indent: number) {
-    super(`${cliSpinners.dots.frames[0]} ${text}`, indent)
+  constructor(text: string, indent: number, opts: KaxOptions) {
+    super(text, {
+      color: opts.colorScheme.task,
+      symbol: cliSpinners.dots.frames[0],
+      symbolizeMultiLine: opts.symbolizeMultiLine,
+      indent,
+    })
     this._curFrameIdx = 0
     this.timer = setInterval(() => {
       this._curFrameIdx = ++this._curFrameIdx % cliSpinners.dots.frames.length
       const frame = cliSpinners.dots.frames[this._curFrameIdx]
-      this.text = `${frame} ${this.text.slice(2)}`
+      this.setText(this.text.slice(2), {
+        color: opts.colorScheme.task,
+        symbol: frame,
+        symbolizeMultiLine: opts.symbolizeMultiLine,
+      })
     }, cliSpinners.dots.interval)
   }
 }
@@ -64,9 +124,11 @@ export class KaxTaskLine extends KaxLine {
 export class KaxTask<T> {
   private _attachedLine: KaxTaskLine
   public readonly emitter: KaxTaskEventEmitter
+  public readonly options: KaxOptions
 
-  public constructor(attachedLine: KaxTaskLine) {
+  public constructor(attachedLine: KaxTaskLine, opts: KaxOptions) {
     this._attachedLine = attachedLine
+    this.options = opts
     this.emitter = new KaxTaskEventEmitter()
   }
 
@@ -91,14 +153,20 @@ export class KaxTask<T> {
   }
 
   public succeed(msg?: string) {
-    this._attachedLine.text = `${logSymbols.success} ${msg ||
-      this._attachedLine.text.slice(2)}`
+    this._attachedLine.setText(msg || this._attachedLine.text.slice(2), {
+      color: this.options.colorScheme.task,
+      symbol: logSymbols.success,
+      symbolizeMultiLine: this.options.symbolizeMultiLine,
+    })
     this.completed()
   }
 
   public fail(msg?: string) {
-    this._attachedLine.text = `${logSymbols.error} ${msg ||
-      this._attachedLine.text.slice(2)}`
+    this._attachedLine.setText(msg || this._attachedLine.text.slice(2), {
+      color: this.options.colorScheme.task,
+      symbol: logSymbols.error,
+      symbolizeMultiLine: this.options.symbolizeMultiLine,
+    })
     this.completed()
   }
 
@@ -133,36 +201,78 @@ export class KaxRenderer {
   }
 }
 
+export interface KaxColorScheme {
+  warning: string
+  error: string
+  info: string
+  task: string
+}
+
+export const kaxDefaultColorScheme: KaxColorScheme = {
+  warning: 'yellow',
+  error: 'red',
+  info: 'blue',
+  task: 'white',
+}
+
+export interface KaxOptions {
+  colorScheme: KaxColorScheme
+  symbolizeMultiLine?: boolean
+}
+
+export const kaxDefaultOptions: KaxOptions = {
+  colorScheme: kaxDefaultColorScheme,
+  symbolizeMultiLine: true,
+}
+
 export class Kax {
-  private renderer: KaxRenderer
+  private readonly renderer: KaxRenderer
+  private readonly opts: KaxOptions
   private curIndent: number
 
-  public constructor() {
+  public constructor(opts: {
+    colorScheme?: {
+      warn?: string
+      error?: string
+      info?: string
+      task?: string
+    }
+    symbolizeMultiLine?: boolean
+  }) {
     this.renderer = new KaxRenderer()
+    const colorScheme = Object.assign(kaxDefaultColorScheme, opts.colorScheme)
+    const symbolizeMultiLine =
+      opts.symbolizeMultiLine !== undefined
+        ? opts.symbolizeMultiLine
+        : kaxDefaultOptions.symbolizeMultiLine
+    this.opts = {
+      colorScheme,
+      symbolizeMultiLine,
+    }
     this.curIndent = 0
   }
 
   public info(msg: string): Kax {
-    const line = new KaxInfoLine(msg, this.curIndent)
+    const line = new KaxInfoLine(msg, this.curIndent, this.opts)
     this.renderer.addLine(line)
     return this
   }
 
   public warn(msg: string): Kax {
-    const line = new KaxWarnLine(msg, this.curIndent)
+    const line = new KaxWarnLine(msg, this.curIndent, this.opts)
     this.renderer.addLine(line)
     return this
   }
 
   public error(msg: string) {
-    const line = new KaxErrorLine(msg, this.curIndent)
+    const line = new KaxErrorLine(msg, this.curIndent, this.opts)
     this.renderer.addLine(line)
     return this
   }
 
   public task<T>(msg: string): KaxTask<T> {
-    const line = new KaxTaskLine(msg, this.curIndent)
-    const task = new KaxTask<T>(line)
+    const line = new KaxTaskLine(msg, this.curIndent, this.opts)
+    const task = new KaxTask<T>(line, this.opts)
     this.renderer.addLine(line)
     this.curIndent++
     task.emitter.on('completed', () => this.curIndent--)
@@ -170,4 +280,4 @@ export class Kax {
   }
 }
 
-export default new Kax()
+export default new Kax(kaxDefaultOptions)

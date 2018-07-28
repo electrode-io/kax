@@ -1,6 +1,5 @@
 const kax = require('../dist/index').default
 
-console.log(kax)
 const delay = d =>
   new Promise((resolve, reject) => {
     setTimeout(() => {
@@ -10,7 +9,7 @@ const delay = d =>
 
 const subtask = async () => {
   await kax.task('delay 2000').run(delay(2000))
-  await kax.warn('Some quick warning')
+  await kax.warn('Here is a\nmultiline warning')
   await kax.task('delay 3000').run(delay(3000))
 }
 
