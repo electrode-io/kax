@@ -359,19 +359,27 @@ export class KaxSimpleRenderer implements KaxRenderer {
       successMsg?: string
     } = {}
   ) {
-    let pendingTaskMsg = `[Started] ${msg}`
+    let pendingTaskMsg = `[================ Started ${msg} ================]`
     this.renderLine(pendingTaskMsg, process.stdout, {
       color: this._opts.colorScheme && this._opts.colorScheme.task,
     })
     task.emitter.on(KaxTask.Success, (successMsg?: string) =>
-      this.renderLine(successMsg || `[Completed] ${msg}`, process.stdout, {
-        color: this._opts.colorScheme && this._opts.colorScheme.task,
-      })
+      this.renderLine(
+        successMsg || `[================ Completed ${msg} ================]`,
+        process.stdout,
+        {
+          color: this._opts.colorScheme && this._opts.colorScheme.task,
+        }
+      )
     )
     task.emitter.on(KaxTask.Failure, (errorMsg?: string) =>
-      this.renderLine(errorMsg || `[Failure] ${msg}`, process.stderr, {
-        color: this._opts.colorScheme && this._opts.colorScheme.task,
-      })
+      this.renderLine(
+        errorMsg || `[================ Failure ${msg} ================]`,
+        process.stderr,
+        {
+          color: this._opts.colorScheme && this._opts.colorScheme.task,
+        }
+      )
     )
   }
 }
