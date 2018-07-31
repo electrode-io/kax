@@ -156,7 +156,7 @@ function formatLine(
   return result
 }
 
-export class AdvancedRenderer implements KaxRenderer {
+export class KaxAdvancedRenderer implements KaxRenderer {
   private readonly _opts: KaxRendererOptions
   private readonly _lines
   private _curLevel: number
@@ -291,7 +291,7 @@ export class AdvancedRenderer implements KaxRenderer {
   }
 }
 
-export class SimpleRenderer implements KaxRenderer {
+export class KaxSimpleRenderer implements KaxRenderer {
   private readonly _opts: KaxRendererOptions
 
   public constructor(opts: KaxRendererOptions = kaxRendererDefaultOptions) {
@@ -409,4 +409,4 @@ export class Kax {
   }
 }
 
-export default new Kax(new AdvancedRenderer())
+export default new Kax(new KaxAdvancedRenderer())
