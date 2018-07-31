@@ -397,4 +397,4 @@ export class Kax {
   }
 }
 
-export default new Kax(new SimpleRenderer(kaxRendererDefaultOptions))
+export default new Kax(new SimpleRenderer())
