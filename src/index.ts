@@ -26,6 +26,7 @@ export class KaxTask<T> {
   public static readonly Success: string = 'success'
   public static readonly Failure: string = 'failure'
   public static readonly Completed: string = 'completed'
+  public static readonly TextUpdated: string = 'textupdated'
 
   public async run(
     task: Promise<T>,
@@ -45,6 +46,10 @@ export class KaxTask<T> {
       this.fail(errorMsg)
       throw e
     }
+  }
+
+  public set text(msg: string) {
+    this.emitter.emit(KaxTask.TextUpdated, msg)
   }
 
   public succeed(msg?: string) {
@@ -278,6 +283,9 @@ export class AdvancedRenderer implements KaxRenderer {
     task.emitter.on(KaxTask.Completed, () => {
       this._curLevel--
       clearInterval(interval)
+    })
+    task.emitter.on(KaxTask.TextUpdated, (m: string) => {
+      msg = m
     })
     this.render()
   }

@@ -22,7 +22,9 @@ const main = async () => {
   await kax.task('subtasks').run(subtask())
   await kax.task('delay 5000').run(delay(5000))
   const custom = kax.task('Manually controlled task')
-  await delay(3000)
+  await delay(2000)
+  custom.text = 'Changing text'
+  await delay(2000)
   custom.succeed('Done !')
 }
 
