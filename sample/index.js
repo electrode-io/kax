@@ -14,10 +14,9 @@ const subtask = async () => {
 }
 
 const main = async () => {
-  kax
-    .info('Some info for you')
-    .warn('And now a warning')
-    .error('And error')
+  kax.info('Some info for you')
+  kax.warn('And now a warning')
+  kax.error('And error')
 
   await kax.task('delay 4000').run(delay(4000))
   await kax.task('subtasks').run(subtask())
