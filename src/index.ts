@@ -257,7 +257,7 @@ export class AdvancedRenderer implements KaxRenderer {
     }, cliSpinners[this._opts.symbolScheme!.taskRunning].interval)
     this._curLevel++
     task.emitter.on(KaxTask.Success, (m?: string) => {
-      this._lines[linesIdx] = formatLine(msg, {
+      this._lines[linesIdx] = formatLine(m || msg, {
         color: this._opts.colorScheme && this._opts.colorScheme.task,
         symbol:
           this._opts.symbolScheme &&
@@ -269,7 +269,7 @@ export class AdvancedRenderer implements KaxRenderer {
       this.render()
     })
     task.emitter.on(KaxTask.Failure, (m?: string) => {
-      this._lines[linesIdx] = formatLine(msg, {
+      this._lines[linesIdx] = formatLine(m || msg, {
         color: this._opts.colorScheme && this._opts.colorScheme.task,
         symbol:
           this._opts.symbolScheme &&
