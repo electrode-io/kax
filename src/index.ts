@@ -73,7 +73,7 @@ export interface KaxColorScheme {
 export const kaxDefaultColorScheme: KaxColorScheme = {
   warning: 'yellow',
   error: 'red',
-  info: 'blue',
+  info: 'cyan',
   task: 'white',
 }
 
