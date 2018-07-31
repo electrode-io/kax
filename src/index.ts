@@ -377,7 +377,7 @@ export class SimpleRenderer implements KaxRenderer {
 }
 
 export class Kax {
-  private readonly _renderer: KaxRenderer
+  private _renderer: KaxRenderer
 
   public constructor(renderer: KaxRenderer) {
     this._renderer = renderer
@@ -402,6 +402,10 @@ export class Kax {
     const task = new KaxTask<T>()
     this._renderer.renderTask(msg, task, { errorMsg, successMsg })
     return task
+  }
+
+  public set renderer(renderer: KaxRenderer) {
+    this._renderer = renderer
   }
 }
 
