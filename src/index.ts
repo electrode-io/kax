@@ -171,16 +171,33 @@ export class KaxAdvancedRenderer implements KaxRenderer {
     logUpdate(this._lines.join('\n'))
   }
 
+  private formatLineInternal(
+    msg: string,
+    {
+      color,
+      symbol,
+    }: {
+      color?: string
+      symbol?: string
+    } = {}
+  ): string {
+    return formatLine(msg, {
+      color: color && this._opts.colorScheme && this._opts.colorScheme[color],
+      symbol:
+        symbol &&
+        this._opts.symbolScheme &&
+        this._opts.symbolScheme[symbol] &&
+        logSymbols[this._opts.symbolScheme[symbol]],
+      indent: this._curLevel * 2,
+      symbolizeMultiLine: this._opts.symbolizeMultiLine,
+    })
+  }
+
   public renderWarning(msg: string) {
     this._lines.push(
-      formatLine(msg, {
-        color: this._opts.colorScheme && this._opts.colorScheme.warning,
-        symbol:
-          this._opts.symbolScheme &&
-          this._opts.symbolScheme.warning &&
-          logSymbols[this._opts.symbolScheme.warning],
-        indent: this._curLevel * 2,
-        symbolizeMultiLine: this._opts.symbolizeMultiLine,
+      this.formatLineInternal(msg, {
+        color: 'warning',
+        symbol: 'warning',
       })
     )
     this.render()
@@ -188,30 +205,14 @@ export class KaxAdvancedRenderer implements KaxRenderer {
 
   public renderInfo(msg: string) {
     this._lines.push(
-      formatLine(msg, {
-        color: this._opts.colorScheme && this._opts.colorScheme.info,
-        symbol:
-          this._opts.symbolScheme &&
-          this._opts.symbolScheme.info &&
-          logSymbols[this._opts.symbolScheme.info],
-        indent: this._curLevel * 2,
-        symbolizeMultiLine: this._opts.symbolizeMultiLine,
-      })
+      this.formatLineInternal(msg, { color: 'info', symbol: 'info' })
     )
     this.render()
   }
 
   public renderError(msg: string) {
     this._lines.push(
-      formatLine(msg, {
-        color: this._opts.colorScheme && this._opts.colorScheme.error,
-        symbol:
-          this._opts.symbolScheme &&
-          this._opts.symbolScheme.error &&
-          logSymbols[this._opts.symbolScheme.error],
-        indent: this._curLevel * 2,
-        symbolizeMultiLine: this._opts.symbolizeMultiLine,
-      })
+      this.formatLineInternal(msg, { color: 'error', symbol: 'error' })
     )
     this.render()
   }
@@ -229,15 +230,7 @@ export class KaxAdvancedRenderer implements KaxRenderer {
   ) {
     const linesIdx =
       this._lines.push(
-        formatLine(msg, {
-          color: this._opts.colorScheme && this._opts.colorScheme.task,
-          symbol:
-            this._opts.symbolScheme &&
-            this._opts.symbolScheme.taskRunning &&
-            cliSpinners[this._opts.symbolScheme.taskRunning].frames[0],
-          indent: this._curLevel * 2,
-          symbolizeMultiLine: this._opts.symbolizeMultiLine,
-        })
+        this.formatLineInternal(msg, { color: 'task', symbol: 'taskRunning' })
       ) - 1
     let curFrameIdx = 0
     const curCapturedLevel = this._curLevel
