@@ -1,31 +1,32 @@
 const kax = require('../dist/index').default
 
-const delay = d =>
-  new Promise((resolve, reject) => {
+const delay = ms =>
+  new Promise(resolve => {
     setTimeout(() => {
       resolve()
-    }, d)
+    }, ms)
   })
 
 const subtask = async () => {
-  await kax.task('delay 2000').run(delay(2000))
-  await kax.warn('Here is a\nmultiline warning')
-  await kax.task('delay 3000').run(delay(3000))
+  await kax.task('Subtask One Running').run(delay(2000))
+  await kax.warn('This is a\nmultiline warning')
+  await kax
+    .task('Subtask Two Running', { successMsg: 'Success !' })
+    .run(delay(2000))
 }
 
 const main = async () => {
-  kax.info('Some info for you')
-  kax.warn('And now a warning')
-  kax.error('And error')
+  kax.info('This is an info line')
+  kax.warn('This is a warn line')
+  kax.error('This is an error line')
 
-  await kax.task('delay 4000').run(delay(4000))
-  await kax.task('subtasks').run(subtask())
-  await kax.task('delay 5000').run(delay(5000))
-  const custom = kax.task('Manually controlled task')
+  await kax.task('Running a top level task').run(delay(2000))
+  await kax.task('Running Subtasks').run(subtask())
+  const task = kax.task('Running a task manually')
   await delay(2000)
-  custom.text = 'Changing text'
+  task.text = 'Text can be changed dynamically'
   await delay(2000)
-  custom.succeed('Done !')
+  task.succeed('Done !')
 }
 
 main().then(() => {})
