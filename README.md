@@ -72,13 +72,15 @@ Here is the default configuration :
     "taskSuccess": "success",
     "taskFailure": "error"
   },
-  "symbolizeMultiLine": "boolean"
+  "symbolizeMultiLine": true,
+  "shouldLogTime": false
 }
 ```
 
 - The colors in `colorScheme` can be any of the colors from [chalk](https://www.npmjs.com/package/chalk).
 - The symbols in `symbolScheme` can be any of the symbols from [log-symbols].(https://github.com/sindresorhus/log-symbols#readme) except for the `taskRunning` symbol, which is a spinner and can be any of the spinners from [cli-spinners](https://github.com/sindresorhus/cli-spinners#readme).
 - `symbolizeMultiLine` indicates whether to add a prepend a symbol to each line of a multiline message, or only to the first line.
+- `shouldLogTime` indicated whether to suffix the tasks lines with a timer to show how long the task has been running for.
 
 If you need to replace the default renderer configuration with your own, just import the renderer class you need, and instantiate it with the config, as follow :
 

@@ -21,12 +21,48 @@ const symbolizeText = (
         .join(os.EOL)
     : `${symbol} ${text}`
 
+class KaxTimer {
+  private _startEpoc: number
+  private _curEpoc: number
+  private _cursSecs: number = 0
+  private _curMins: number = 0
+  private _interval: NodeJS.Timer
+
+  public constructor() {
+    this._startEpoc = Date.now()
+    this._curEpoc = this._startEpoc
+  }
+
+  public start() {
+    this._interval = setInterval(() => {
+      this._curEpoc = Date.now()
+      const deltaEpocInSec = (this._curEpoc - this._startEpoc) / 1000
+      this._cursSecs = Math.trunc(deltaEpocInSec % 60)
+      this._curMins = Math.trunc(deltaEpocInSec / 60)
+    }, 500)
+    return this
+  }
+
+  public stop() {
+    clearInterval(this._interval)
+    return this
+  }
+
+  public toString() {
+    this._curEpoc = Date.now()
+    return this._curMins > 0
+      ? `${this._curMins}m ${this._cursSecs}s`
+      : `${this._cursSecs}s`
+  }
+}
+
 export class KaxTask<T> {
   public readonly emitter: KaxTaskEventEmitter = new KaxTaskEventEmitter()
   public static readonly Success: string = 'success'
   public static readonly Failure: string = 'failure'
   public static readonly Completed: string = 'completed'
   public static readonly TextUpdated: string = 'textupdated'
+  private _kaxTimer: KaxTimer = new KaxTimer().start()
 
   public async run(
     task: Promise<T>,
@@ -55,11 +91,17 @@ export class KaxTask<T> {
   public succeed(msg?: string) {
     this.emitter.emit(KaxTask.Success, msg)
     this.emitter.emit(KaxTask.Completed)
+    this._kaxTimer.stop()
   }
 
   public fail(msg?: string) {
     this.emitter.emit(KaxTask.Failure, msg)
     this.emitter.emit(KaxTask.Completed)
+    this._kaxTimer.stop()
+  }
+
+  public get timer(): KaxTimer {
+    return this._kaxTimer
   }
 }
 
@@ -110,12 +152,14 @@ export interface KaxRendererOptions {
   colorScheme?: KaxColorScheme
   symbolScheme?: KaxSymbolScheme
   symbolizeMultiLine?: boolean
+  shouldLogTime?: boolean
 }
 
 export const kaxRendererDefaultOptions: KaxRendererOptions = {
   colorScheme: kaxDefaultColorScheme,
   symbolScheme: kaxDefaultSymbolScheme,
   symbolizeMultiLine: true,
+  shouldLogTime: false,
 }
 
 export interface KaxRenderer {
@@ -132,11 +176,13 @@ function formatLine(
     symbol,
     indent,
     symbolizeMultiLine,
+    time,
   }: {
     color?: string
     symbol?: string
     indent?: number
     symbolizeMultiLine?: boolean
+    time?: string
   } = {}
 ): string {
   let result = msg
@@ -145,6 +191,9 @@ function formatLine(
   }
   if (symbol) {
     result = symbolizeText(symbol, result, { symbolizeMultiLine })
+  }
+  if (time) {
+    result += chalk.dim(` ${time}`)
   }
   if (indent) {
     result = indentString(result, indent)
@@ -172,9 +221,11 @@ export class KaxAdvancedRenderer implements KaxRenderer {
     {
       color,
       symbol,
+      time,
     }: {
       color?: string
       symbol?: string
+      time?: string
     } = {}
   ): string {
     return formatLine(msg, {
@@ -186,6 +237,7 @@ export class KaxAdvancedRenderer implements KaxRenderer {
         logSymbols[this._opts.symbolScheme[symbol]],
       indent: this._curLevel * 2,
       symbolizeMultiLine: this._opts.symbolizeMultiLine,
+      time,
     })
   }
 
@@ -216,7 +268,11 @@ export class KaxAdvancedRenderer implements KaxRenderer {
   public renderTask<T>(msg: string, task: KaxTask<T>) {
     const linesIdx =
       this._lines.push(
-        this.formatLineInternal(msg, { color: 'task', symbol: 'taskRunning' })
+        this.formatLineInternal(msg, {
+          color: 'task',
+          symbol: 'taskRunning',
+          time: this._opts.shouldLogTime ? task.timer.toString() : undefined,
+        })
       ) - 1
     let curFrameIdx = 0
     const curCapturedLevel = this._curLevel
@@ -231,6 +287,7 @@ export class KaxAdvancedRenderer implements KaxRenderer {
         symbol: frame,
         indent: curCapturedLevel * 2,
         symbolizeMultiLine: this._opts.symbolizeMultiLine,
+        time: this._opts.shouldLogTime ? task.timer.toString() : undefined,
       })
       this.render()
     }, cliSpinners[this._opts.symbolScheme!.taskRunning].interval)
@@ -244,6 +301,7 @@ export class KaxAdvancedRenderer implements KaxRenderer {
           logSymbols[this._opts.symbolScheme.taskSuccess],
         indent: curCapturedLevel * 2,
         symbolizeMultiLine: this._opts.symbolizeMultiLine,
+        time: this._opts.shouldLogTime ? task.timer.toString() : undefined,
       })
       this.render()
     })
@@ -256,6 +314,7 @@ export class KaxAdvancedRenderer implements KaxRenderer {
           logSymbols[this._opts.symbolScheme.taskFailure],
         indent: curCapturedLevel * 2,
         symbolizeMultiLine: this._opts.symbolizeMultiLine,
+        time: this._opts.shouldLogTime ? task.timer.toString() : undefined,
       })
       this.render()
     })
