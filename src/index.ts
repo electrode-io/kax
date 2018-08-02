@@ -122,11 +122,7 @@ export interface KaxRenderer {
   renderWarning(msg: string)
   renderInfo(msg: string)
   renderError(msg: string)
-  renderTask<T>(
-    msg: string,
-    task: KaxTask<T>,
-    { errorMsg, successMsg }: { errorMsg?: string; successMsg?: string }
-  )
+  renderTask<T>(msg: string, task: KaxTask<T>)
 }
 
 function formatLine(
@@ -217,17 +213,7 @@ export class KaxAdvancedRenderer implements KaxRenderer {
     this.render()
   }
 
-  public renderTask<T>(
-    msg: string,
-    task: KaxTask<T>,
-    {
-      errorMsg,
-      successMsg,
-    }: {
-      errorMsg?: string
-      successMsg?: string
-    } = {}
-  ) {
+  public renderTask<T>(msg: string, task: KaxTask<T>) {
     const linesIdx =
       this._lines.push(
         this.formatLineInternal(msg, { color: 'task', symbol: 'taskRunning' })
@@ -341,17 +327,7 @@ export class KaxSimpleRenderer implements KaxRenderer {
     })
   }
 
-  public renderTask<T>(
-    msg: string,
-    task: KaxTask<T>,
-    {
-      errorMsg,
-      successMsg,
-    }: {
-      errorMsg?: string
-      successMsg?: string
-    } = {}
-  ) {
+  public renderTask<T>(msg: string, task: KaxTask<T>) {
     let pendingTaskMsg = `[================ Started ${msg} ================]`
     this.renderLine(pendingTaskMsg, process.stdout, {
       color: this._opts.colorScheme && this._opts.colorScheme.task,
@@ -396,12 +372,9 @@ export class Kax {
     this._renderer.renderError(msg)
   }
 
-  public task<T>(
-    msg: string,
-    { errorMsg, successMsg }: { errorMsg?: string; successMsg?: string } = {}
-  ): KaxTask<T> {
+  public task<T>(msg: string): KaxTask<T> {
     const task = new KaxTask<T>()
-    this._renderer.renderTask(msg, task, { errorMsg, successMsg })
+    this._renderer.renderTask(msg, task)
     return task
   }
 
