@@ -387,13 +387,13 @@ export class KaxSimpleRenderer implements KaxRenderer {
   }
 
   public renderTask<T>(msg: string, task: KaxTask<T>) {
-    let pendingTaskMsg = `[================ Started ${msg} ================]`
+    let pendingTaskMsg = `[ ${msg} (Started) ]`
     this.renderLine(pendingTaskMsg, process.stdout, {
       color: this._opts.colorScheme && this._opts.colorScheme.task,
     })
     task.emitter.on(KaxTask.Success, (successMsg?: string) =>
       this.renderLine(
-        successMsg || `[================ Completed ${msg} ================]`,
+        successMsg || `[ ${msg} (Completed in ${task.timer.toString()})]`,
         process.stdout,
         {
           color: this._opts.colorScheme && this._opts.colorScheme.task,
@@ -401,13 +401,9 @@ export class KaxSimpleRenderer implements KaxRenderer {
       )
     )
     task.emitter.on(KaxTask.Failure, (errorMsg?: string) =>
-      this.renderLine(
-        errorMsg || `[================ Failure ${msg} ================]`,
-        process.stderr,
-        {
-          color: this._opts.colorScheme && this._opts.colorScheme.task,
-        }
-      )
+      this.renderLine(errorMsg || `[ ${msg} (Failed) ]`, process.stderr, {
+        color: this._opts.colorScheme && this._opts.colorScheme.task,
+      })
     )
   }
 }
