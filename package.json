@@ -1,6 +1,6 @@
 {
   "name": "kax",
-  "version": "1.2.6",
+  "version": "1.2.7",
   "description": "A simple logger with spinners",
   "main": "dist/index.js",
   "license": "Apache-2.0",
