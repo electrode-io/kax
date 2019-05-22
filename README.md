@@ -16,7 +16,6 @@ const subtask = async () => {
     .run(delay(2000))
 }
 
-
 kax.info('This is an info line')
 kax.warn('This is a warn line')
 kax.error('This is an error line')
@@ -135,6 +134,14 @@ kax.task(msg /* string */)
 Renders a message using the task level.  
 The color used for the message will be the one set in the `colorScheme` config (defaults to `white`).  
 The symbol prepended to the message will be a spinner (defaults to `dots`).
+
+```js
+kax.raw(msg /* string */)
+```
+
+Renders a message using the raw level.
+No color will be used.
+No symbol will be prepended to the message.
 
 The spinner attached to the message will start spinning upon invocation of this function, and will continue spinning until task completion.
 

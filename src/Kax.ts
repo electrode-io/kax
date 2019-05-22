@@ -20,6 +20,10 @@ export class Kax {
     this._renderer.renderError(msg)
   }
 
+  public raw(msg: string): void {
+    this._renderer.renderRaw(msg)
+  }
+
   public task<T>(msg: string): KaxTask<T> {
     const task = new KaxTask<T>()
     this._renderer.renderTask(msg, task)

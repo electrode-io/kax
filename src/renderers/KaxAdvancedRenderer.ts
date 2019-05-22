@@ -73,6 +73,11 @@ export class KaxAdvancedRenderer implements KaxRenderer {
     this.render()
   }
 
+  public renderRaw(msg: string) {
+    this._lines.push(msg)
+    this.render()
+  }
+
   public renderTask<T>(msg: string, task: KaxTask<T>) {
     const linesIdx =
       this._lines.push(

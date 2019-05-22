@@ -62,4 +62,5 @@ export interface KaxRenderer {
   renderInfo(msg: string)
   renderError(msg: string)
   renderTask<T>(msg: string, task: KaxTask<T>)
+  renderRaw(msg: string)
 }

@@ -65,6 +65,10 @@ export class KaxSimpleRenderer implements KaxRenderer {
     })
   }
 
+  public renderRaw(msg: string) {
+    process.stdout.write(`${msg}${os.EOL}`)
+  }
+
   public renderTask<T>(msg: string, task: KaxTask<T>) {
     let pendingTaskMsg = `[ ${msg} (Started) ]`
     this.renderLine(pendingTaskMsg, process.stdout, {
