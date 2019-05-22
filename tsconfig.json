@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "es2015",
-    "allowJs": true,
+    "allowJs": false,
     "esModuleInterop": true,
     "lib": ["es2017"],
     "module": "commonjs",
@@ -10,7 +10,8 @@
     "preserveSymlinks": true,
     "strictNullChecks": true,
     "rootDir": "./src",
-    "outDir": "dist"
+    "outDir": "dist",
+    "declaration": true
   },
   "include": ["**/*"],
   "exclude": ["node_modules", "**/*.spec.ts", "test", "dist", "sample"]
