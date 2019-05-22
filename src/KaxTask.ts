@@ -9,7 +9,7 @@ export class KaxTask<T> {
   public static readonly TextUpdated: string = 'textupdated'
   private _kaxTimer: KaxTimer = new KaxTimer().start()
 
-  public async run(
+  public async run<T>(
     task: Promise<T>,
     {
       errorMsg,
