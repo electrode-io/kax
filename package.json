@@ -19,14 +19,14 @@
     "url": "https://github.com/belemaire/kax.git"
   },
   "devDependencies": {
-    "@types/chai": "^4.2.5",
-    "@types/mocha": "^5.2.7",
-    "@types/node": "^12.12.7",
+    "@types/chai": "^4.2.9",
+    "@types/mocha": "^7.0.1",
+    "@types/node": "^13.7.1",
     "chai": "^4.2.0",
-    "mocha": "^6.2.2",
+    "mocha": "^7.0.1",
     "prettier": "^1.19.1",
-    "ts-node": "^8.5.0",
-    "typescript": "^3.7.2"
+    "ts-node": "^8.6.2",
+    "typescript": "^3.7.5"
   },
   "scripts": {
     "test": "mocha -r ts-node/register test/*.ts",
@@ -38,7 +38,7 @@
     "cli-spinners": "^2.2.0",
     "indent-string": "^4.0.0",
     "log-symbols": "^3.0.0",
-    "log-update": "^3.3.0"
+    "log-update": "^3.4.0"
   },
   "engines": {
     "node": ">=8"
