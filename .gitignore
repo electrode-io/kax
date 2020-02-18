@@ -1,15 +1,7 @@
-# OSX
 .DS_Store
-
-# NODE
 node_modules/
-*/node_modules
-
-# YARN
 yarn-error.log
-
-# TESTS
-*/tmp
-
-# DISTRIB
-dist
+tmp/
+dist/
+.idea/
+*.iml
