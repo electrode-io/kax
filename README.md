@@ -1,5 +1,7 @@
 # Kax
 
+![ci][1]
+
 A simple logger, based on [log-update](https://github.com/sindresorhus/log-update/issues), that can be used for command line CLIs.  
 Support asynchronous task nesting out of the box without the need for complex constructs.
 
@@ -184,3 +186,5 @@ Manually completes the task with failure. It will update the spinner with the `t
 ### Automatic task indentation
 
 When using the default `KaxAdvancedRenderer`, if a task is started while a previous one is still running, the renderer new task message (and any other messages) will be automatically indented until the parent task completes.
+
+[1]: https://github.com/belemaire/kax/workflows/ci/badge.svg
