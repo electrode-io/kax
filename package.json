@@ -19,7 +19,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/belemaire/kax.git"
+    "url": "https://github.com/electrode-io/kax.git"
   },
   "devDependencies": {
     "@types/chai": "^4.2.9",
