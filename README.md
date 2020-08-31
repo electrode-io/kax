@@ -39,11 +39,11 @@ It will render as follow
 
 `kax` comes with two different renderers
 
-- `KaxSimpleRenderer`  
-  A simple renderer that do not make use of spinners and subtasks indentation. It can be useful for environments that do not play well with spinners or do not need them (for example CI envs).
+- `KaxSimpleRenderer`\
+Does not use spinners, colors, or subtask indentation.
 
-- `KaxAdvancedRenderer`  
-  The default `kax` renderer. It uses spinners, colors, and subtasks indentation.
+- `KaxAdvancedRenderer`\
+Uses spinners, colors, and subtask indentation.
 
 ## Initialization
 
@@ -51,7 +51,10 @@ It will render as follow
 import kax from 'kax'
 ```
 
-This default singleton instance comes with the default renderer `KaxAdvancedRender` attached to it, with a default configuration.
+This default singleton instance comes with a default renderer and configuration attached to it.
+
+If the `CI` environment variable is set, or `TERM=dumb`, the default renderer
+is `KaxSimpleRenderer`, otherwise it is `KaxAdvancedRenderer`.
 
 If you need to customize the renderer with your own configuration, or need to switch to a `KaxSimpleRenderer` instead, you can instantiate a renderer with a custom configuration and attached it to the kax instance.
 
