@@ -190,4 +190,4 @@ Manually completes the task with failure. It will update the spinner with the `t
 
 When using the default `KaxAdvancedRenderer`, if a task is started while a previous one is still running, the renderer new task message (and any other messages) will be automatically indented until the parent task completes.
 
-[1]: https://github.com/belemaire/kax/workflows/ci/badge.svg
+[1]: https://github.com/electrode-io/kax/workflows/ci/badge.svg
