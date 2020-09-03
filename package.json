@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "build": "tsc",
-    "prepublish": "yarn build",
+    "prepublishOnly": "npm run build",
     "test": "mocha -r ts-node/register test/*.ts"
   },
   "repository": {
