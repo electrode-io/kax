@@ -21,8 +21,15 @@
     "logger",
     "spinner"
   ],
-  "author": "Benoit Lemaire <lemaireb@gmail.com>",
+  "author": "Electrode Native <electrodenative@gmail.com>",
+  "contributors": [
+    "Benoit Lemaire <blemaire@walmartlabs.com>",
+    "Frieder Bluemle <frieder.bluemle@walmartlabs.com>"
+  ],
   "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/electrode-io/kax/issues"
+  },
   "dependencies": {
     "chalk": "^4.1.0",
     "cli-spinners": "^2.4.0",
@@ -41,6 +48,6 @@
     "typescript": "^4.0.2"
   },
   "engines": {
-    "node": ">=8"
+    "node": ">=10"
   }
 }
