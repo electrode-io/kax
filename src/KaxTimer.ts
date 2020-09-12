@@ -1,9 +1,9 @@
 export class KaxTimer {
   private _startEpoc: number
   private _curEpoc: number
-  private _cursSecs: number = 0
-  private _curMins: number = 0
-  private _interval: NodeJS.Timer
+  private _cursSecs = 0
+  private _curMins = 0
+  private _interval: NodeJS.Timeout | null = null
 
   public constructor() {
     this._startEpoc = Date.now()
@@ -21,7 +21,9 @@ export class KaxTimer {
   }
 
   public stop() {
-    clearInterval(this._interval)
+    if (this._interval) {
+      clearInterval(this._interval)
+    }
     return this
   }
 
