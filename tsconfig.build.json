@@ -3,7 +3,5 @@
   "compilerOptions": {
     "noEmit": false
   },
-  "include": [
-    "src/"
-  ]
+  "include": ["src/"]
 }

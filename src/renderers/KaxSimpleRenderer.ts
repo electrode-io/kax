@@ -1,18 +1,19 @@
+import logSymbols from 'log-symbols';
+import os from 'os';
+
+import { KaxTask } from '../KaxTask';
 import {
   KaxRenderer,
-  KaxRendererOptions,
   kaxRendererDefaultOptions,
-} from '../types'
-import { formatLine } from '../utils'
-import { KaxTask } from '../KaxTask'
-import logSymbols from 'log-symbols'
-import os from 'os'
+  KaxRendererOptions,
+} from '../types';
+import { formatLine } from '../utils';
 
 export class KaxSimpleRenderer implements KaxRenderer {
-  private readonly _opts: KaxRendererOptions
+  private readonly _opts: KaxRendererOptions;
 
   public constructor(opts: KaxRendererOptions = kaxRendererDefaultOptions) {
-    this._opts = opts
+    this._opts = opts;
   }
 
   public renderLine(
@@ -22,17 +23,17 @@ export class KaxSimpleRenderer implements KaxRenderer {
       color,
       symbol,
     }: {
-      color?: string
-      symbol?: string
-    } = {}
+      color?: string;
+      symbol?: string;
+    } = {},
   ) {
     stream.write(
       `${formatLine(msg, {
         color,
         symbol,
         symbolizeMultiLine: this._opts.symbolizeMultiLine,
-      })}${os.EOL}`
-    )
+      })}${os.EOL}`,
+    );
   }
 
   public renderWarning(msg: string) {
@@ -42,7 +43,7 @@ export class KaxSimpleRenderer implements KaxRenderer {
         this._opts.symbolScheme &&
         this._opts.symbolScheme.warning &&
         logSymbols[this._opts.symbolScheme.warning],
-    })
+    });
   }
 
   public renderInfo(msg: string) {
@@ -52,7 +53,7 @@ export class KaxSimpleRenderer implements KaxRenderer {
         this._opts.symbolScheme &&
         this._opts.symbolScheme.info &&
         logSymbols[this._opts.symbolScheme.info],
-    })
+    });
   }
 
   public renderError(msg: string) {
@@ -62,30 +63,31 @@ export class KaxSimpleRenderer implements KaxRenderer {
         this._opts.symbolScheme &&
         this._opts.symbolScheme.error &&
         logSymbols[this._opts.symbolScheme.error],
-    })
+    });
   }
 
+  // eslint-disable-next-line class-methods-use-this
   public renderRaw(msg: string) {
-    process.stdout.write(`${msg}${os.EOL}`)
+    process.stdout.write(`${msg}${os.EOL}`);
   }
 
   public renderTask(msg: string, task: KaxTask) {
     this.renderLine(`[ ${msg} (Started) ]`, process.stdout, {
       color: this._opts.colorScheme && this._opts.colorScheme.task,
-    })
+    });
     task.emitter.on(KaxTask.Success, (successMsg?: string) =>
       this.renderLine(
         successMsg || `[ ${msg} (Completed in ${task.timer.toString()})]`,
         process.stdout,
         {
           color: this._opts.colorScheme && this._opts.colorScheme.task,
-        }
-      )
-    )
+        },
+      ),
+    );
     task.emitter.on(KaxTask.Failure, (errorMsg?: string) =>
       this.renderLine(errorMsg || `[ ${msg} (Failed) ]`, process.stderr, {
         color: this._opts.colorScheme && this._opts.colorScheme.task,
-      })
-    )
+      }),
+    );
   }
 }
