@@ -1,18 +1,16 @@
 {
   "compilerOptions": {
-    "target": "es2015",
-    "allowJs": false,
-    "esModuleInterop": true,
-    "lib": ["es2017"],
+    "target": "es2018",
     "module": "commonjs",
-    "moduleResolution": "node",
+    "lib": ["es2018"],
+    "declaration": true,
     "sourceMap": true,
-    "preserveSymlinks": true,
-    "strictNullChecks": true,
-    "rootDir": "./src",
     "outDir": "dist",
-    "declaration": true
+    "strict": true,
+    "noImplicitAny": false,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
   },
-  "include": ["**/*"],
-  "exclude": ["node_modules", "**/*.spec.ts", "test", "dist", "sample"]
+  "include": ["src/**/*"]
 }

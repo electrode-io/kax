@@ -70,8 +70,7 @@ export class KaxSimpleRenderer implements KaxRenderer {
   }
 
   public renderTask<T>(msg: string, task: KaxTask<T>) {
-    let pendingTaskMsg = `[ ${msg} (Started) ]`
-    this.renderLine(pendingTaskMsg, process.stdout, {
+    this.renderLine(`[ ${msg} (Started) ]`, process.stdout, {
       color: this._opts.colorScheme && this._opts.colorScheme.task,
     })
     task.emitter.on(KaxTask.Success, (successMsg?: string) =>
