@@ -24,8 +24,8 @@ export class Kax {
     this._renderer.renderRaw(msg)
   }
 
-  public task<T>(msg: string): KaxTask<T> {
-    const task = new KaxTask<T>()
+  public task(msg: string): KaxTask {
+    const task = new KaxTask()
     this._renderer.renderTask(msg, task)
     return task
   }

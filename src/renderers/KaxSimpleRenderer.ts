@@ -69,7 +69,7 @@ export class KaxSimpleRenderer implements KaxRenderer {
     process.stdout.write(`${msg}${os.EOL}`)
   }
 
-  public renderTask<T>(msg: string, task: KaxTask<T>) {
+  public renderTask(msg: string, task: KaxTask) {
     this.renderLine(`[ ${msg} (Started) ]`, process.stdout, {
       color: this._opts.colorScheme && this._opts.colorScheme.task,
     })
