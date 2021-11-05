@@ -46,8 +46,5 @@
     "prettier": "^2.1.1",
     "ts-node": "^9.0.0",
     "typescript": "^4.0.2"
-  },
-  "engines": {
-    "node": ">=10"
   }
 }
