@@ -1,13 +1,14 @@
-# Kax
+# kax
 
-![ci][1]
+[![ci][1]][2]
 
-A simple logger, based on [log-update](https://github.com/sindresorhus/log-update/issues), that can be used for command line CLIs.  
-Support asynchronous task nesting out of the box without the need for complex constructs.
+A simple logger that supports asynchronous task nesting without the need for complex constructs.
+
+Based on [log-update](https://github.com/sindresorhus/log-update).
 
 ## Sample
 
-The following sample code show some of the constructs offerd by Kax.
+The following sample code shows some constructs offered by Kax.
 
 ```js
 const subtask = async () => {
@@ -31,7 +32,7 @@ await delay(2000)
 task.succeed('Done !')
 ```
 
-It will render as follow
+It will render as follows
 
 ![alt text](media/sample.gif)
 
@@ -39,11 +40,8 @@ It will render as follow
 
 `kax` comes with two different renderers
 
-- `KaxSimpleRenderer`\
-Does not use spinners, colors, or subtask indentation.
-
-- `KaxAdvancedRenderer`\
-Uses spinners, colors, and subtask indentation.
+- `KaxSimpleRenderer` - Does not use spinners, colors, or subtask indentation.
+- `KaxAdvancedRenderer` - Uses spinners, colors, and subtask indentation.
 
 ## Initialization
 
@@ -82,11 +80,11 @@ Here is the default configuration :
 ```
 
 - The colors in `colorScheme` can be any of the colors from [chalk](https://www.npmjs.com/package/chalk).
-- The symbols in `symbolScheme` can be any of the symbols from [log-symbols].(https://github.com/sindresorhus/log-symbols#readme) except for the `taskRunning` symbol, which is a spinner and can be any of the spinners from [cli-spinners](https://github.com/sindresorhus/cli-spinners#readme).
-- `symbolizeMultiLine` indicates whether to add a prepend a symbol to each line of a multiline message, or only to the first line.
+- The symbols in `symbolScheme` can be any of the symbols from [log-symbols](https://github.com/sindresorhus/log-symbols#readme) except for the `taskRunning` symbol, which is a spinner and can be any of the spinners from [cli-spinners](https://github.com/sindresorhus/cli-spinners#readme).
+- `symbolizeMultiLine` indicates whether to prepend a symbol to each line of a multiline message, or only to the first line.
 - `shouldLogTime` indicated whether to suffix the tasks lines with a timer to show how long the task has been running for.
 
-If you need to replace the default renderer configuration with your own, just import the renderer class you need, and instantiate it with the config, as follow :
+If you need to replace the default renderer configuration with your own, just import the renderer class you need, and instantiate it with the config, as follows :
 
 ```js
 import { KaxAdvancedRender } from 'kax'
@@ -112,45 +110,44 @@ const kax = new Kax(myRenderer)
 kax.info(msg /* string */)
 ```
 
-Renders a message using the info level.  
-The color used for the message will be the one set in the `colorScheme` config (defaults to `cyan`).  
+Renders a message using the info level.\
+The color used for the message will be the one set in the `colorScheme` config (defaults to `cyan`).\
 The symbol prepended to the message will be the one set in the `symbolScheme` config (defaults to `info`).
 
 ```js
 kax.warn(msg /* string */)
 ```
 
-Renders a message using the warn level.  
-The color used for the message will be the one set in the `colorScheme` config (defaults to `yellow`).  
+Renders a message using the warn level.\
+The color used for the message will be the one set in the `colorScheme` config (defaults to `yellow`).\
 The symbol prepended to the message will be the one set in the `symbolScheme` config (defaults to `warning`).
 
 ```js
 kax.error(msg /* string */)
 ```
 
-Renders a message using the error level.  
-The color used for the message will be the one set in the `colorScheme` config (defaults to `red`).  
+Renders a message using the error level.\
+The color used for the message will be the one set in the `colorScheme` config (defaults to `red`).\
 The symbol prepended to the message will be the one set in the `symbolScheme` config (defaults to `error`).
 
 ```js
 kax.task(msg /* string */)
 ```
 
-Renders a message using the task level.  
-The color used for the message will be the one set in the `colorScheme` config (defaults to `white`).  
+Renders a message using the task level.\
+The color used for the message will be the one set in the `colorScheme` config (defaults to `white`).\
 The symbol prepended to the message will be a spinner (defaults to `dots`).
 
 ```js
 kax.raw(msg /* string */)
 ```
 
-Renders a message using the raw level.
-No color will be used.
-No symbol will be prepended to the message.
+Renders a message using the raw level.\
+No color will be used and no symbol will be prepended to the message.
 
 The spinner attached to the message will start spinning upon invocation of this function, and will continue spinning until task completion.
 
-There are two different ways to run/complete a task. Implicilty, or explicitly.
+There are two different ways to run/complete a task. Implicitly, or explicitly.
 
 ### Implicit task run/completion (handled by `kax`)
 
@@ -163,8 +160,8 @@ kax.task(msg /* string */).run(task /* Promise<T> */, {
 })
 ```
 
-The task provided to the `run` function, is a function that returns a `Promise`.  
-`kax` will await for this Promise completion, and upon completion will updated the message spinner with either the `taskSuccess` symbol from config (defaults to `success`) or the `taskFailure` symbol from config (defaults to `error`). In the case of successful completion, `kax` will return the result of the `Promise` task, and in the case of failure, it will rethrow the task exception.
+The task provided to the `run` function, is a function that returns a `Promise`.\
+`kax` will await for this Promise completion, and upon completion will update the message spinner with either the `taskSuccess` symbol from config (defaults to `success`) or the `taskFailure` symbol from config (defaults to `error`). In the case of successful completion, `kax` will return the result of the `Promise` task, and in the case of failure, it will rethrow the task exception.
 
 `successMsg` and `errorMsg` are both optional. If not set, the original `msg` will be used instead.
 
@@ -191,3 +188,4 @@ Manually completes the task with failure. It will update the spinner with the `t
 When using the default `KaxAdvancedRenderer`, if a task is started while a previous one is still running, the renderer new task message (and any other messages) will be automatically indented until the parent task completes.
 
 [1]: https://github.com/electrode-io/kax/workflows/ci/badge.svg
+[2]: https://github.com/electrode-io/kax/actions
