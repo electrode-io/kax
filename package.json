@@ -1,6 +1,6 @@
 {
   "name": "kax",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "description": "A simple logger with spinners",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
