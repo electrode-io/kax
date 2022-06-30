@@ -12,29 +12,29 @@ The following sample code shows some constructs offered by Kax.
 
 ```js
 const subtask = async () => {
-  await kax.task('Subtask One Running').run(delay(2000))
-  await kax.warn('This is a\nmultiline warning')
+  await kax.task('Subtask One Running').run(delay(2000));
+  await kax.warn('This is a\nmultiline warning');
   await kax
-    .task('Subtask Two Running', { successMsg: 'Success !' })
-    .run(delay(2000))
-}
+    .task('Subtask Two Running', { successMsg: 'Success!' })
+    .run(delay(2000));
+};
 
-kax.info('This is an info line')
-kax.warn('This is a warn line')
-kax.error('This is an error line')
+kax.info('This is an info line');
+kax.warn('This is a warn line');
+kax.error('This is an error line');
 
-await kax.task('Running a top level task').run(delay(2000))
-await kax.task('Running Subtasks').run(subtask())
-const task = kax.task('Running a task manually')
-await delay(2000)
-task.text = 'Text can be changed dynamically'
-await delay(2000)
-task.succeed('Done !')
+await kax.task('Running a top level task').run(delay(2000));
+await kax.task('Running Subtasks').run(subtask());
+const task = kax.task('Running a task manually');
+await delay(2000);
+task.text = 'Text can be changed dynamically';
+await delay(2000);
+task.succeed('Done!');
 ```
 
 It will render as follows
 
-![alt text](media/sample.gif)
+![kax example](media/sample.gif)
 
 ## Renderers
 
@@ -46,7 +46,7 @@ It will render as follows
 ## Initialization
 
 ```js
-import kax from 'kax'
+import kax from 'kax';
 ```
 
 This default singleton instance comes with a default renderer and configuration attached to it.
@@ -54,9 +54,9 @@ This default singleton instance comes with a default renderer and configuration 
 If the `CI` environment variable is set, or `TERM=dumb`, the default renderer
 is `KaxSimpleRenderer`, otherwise it is `KaxAdvancedRenderer`.
 
-If you need to customize the renderer with your own configuration, or need to switch to a `KaxSimpleRenderer` instead, you can instantiate a renderer with a custom configuration and attached it to the kax instance.
+If you need to customize the renderer with your own configuration, or need to switch to a `KaxSimpleRenderer` instead, you can instantiate a renderer with a custom configuration and attach it to the kax instance.
 
-Here is the default configuration :
+Here is the default configuration:
 
 ```json
 {
@@ -84,30 +84,32 @@ Here is the default configuration :
 - `symbolizeMultiLine` indicates whether to prepend a symbol to each line of a multiline message, or only to the first line.
 - `shouldLogTime` indicated whether to suffix the tasks lines with a timer to show how long the task has been running for.
 
-If you need to replace the default renderer configuration with your own, just import the renderer class you need, and instantiate it with the config, as follows :
+If you need to replace the default renderer configuration with your own, import the renderer class you need, and instantiate it with the config, as follows:
 
 ```js
-import { KaxAdvancedRender } from 'kax'
-const myRenderer = new KaxAdvancedRenderer(myConfig)
+import { KaxAdvancedRender } from 'kax';
+
+const myRenderer = new KaxAdvancedRenderer(myConfig);
 ```
 
 Then you can simply attach this new renderer to the `kax` instance
 
 ```js
-kax.renderer = myRenderer
+kax.renderer = myRenderer;
 ```
 
 Alternatively you can directly construct an instance of `kax` providing your renderer, if you don't want to use the default singleton instance
 
 ```js
-import { Kax } from 'kax'
-const kax = new Kax(myRenderer)
+import { Kax } from 'kax';
+
+const kax = new Kax(myRenderer);
 ```
 
 ## Api
 
 ```js
-kax.info(msg /* string */)
+kax.info(msg /* string */);
 ```
 
 Renders a message using the info level.\
@@ -115,7 +117,7 @@ The color used for the message will be the one set in the `colorScheme` config (
 The symbol prepended to the message will be the one set in the `symbolScheme` config (defaults to `info`).
 
 ```js
-kax.warn(msg /* string */)
+kax.warn(msg /* string */);
 ```
 
 Renders a message using the warn level.\
@@ -123,7 +125,7 @@ The color used for the message will be the one set in the `colorScheme` config (
 The symbol prepended to the message will be the one set in the `symbolScheme` config (defaults to `warning`).
 
 ```js
-kax.error(msg /* string */)
+kax.error(msg /* string */);
 ```
 
 Renders a message using the error level.\
@@ -131,7 +133,7 @@ The color used for the message will be the one set in the `colorScheme` config (
 The symbol prepended to the message will be the one set in the `symbolScheme` config (defaults to `error`).
 
 ```js
-kax.task(msg /* string */)
+kax.task(msg /* string */);
 ```
 
 Renders a message using the task level.\
@@ -139,7 +141,7 @@ The color used for the message will be the one set in the `colorScheme` config (
 The symbol prepended to the message will be a spinner (defaults to `dots`).
 
 ```js
-kax.raw(msg /* string */)
+kax.raw(msg /* string */);
 ```
 
 Renders a message using the raw level.\
@@ -157,7 +159,7 @@ This can be achieved by calling `run` on the `KaxTask` instance returned by `kax
 kax.task(msg /* string */).run(task /* Promise<T> */, {
   successMsg /* string [optional] */,
   errorMsg /* string [optional] */,
-})
+});
 ```
 
 The task provided to the `run` function, is a function that returns a `Promise`.\
@@ -172,13 +174,13 @@ Instead of using the `run` function, it is also possible to control the task com
 You can manually call the following two functions on the `KaxTask` object to either complete the task successfully or with a failure
 
 ```js
-kaxTask.succeed(successMsg /* string [optional] */)
+kaxTask.succeed(successMsg /* string [optional] */);
 ```
 
 Manually completes the task with success. It will update the spinner with the `taskSuccess` symbol from config (defaults to `success`) and the mesage with `successMsg` (if provided, otherwise it will leave original message untouched).
 
 ```js
-kaxTask.fail(errorMsg /* string [optional] */)
+kaxTask.fail(errorMsg /* string [optional] */);
 ```
 
 Manually completes the task with failure. It will update the spinner with the `taskFailure` symbol from config (defaults to `error`) and the mesage with `errorMsg` (if provided, otherwise it will leave original message untouched).
