@@ -1,7 +1,7 @@
 import { KaxTaskEventEmitter } from './KaxTaskEventEmitter'
 import { KaxTimer } from './KaxTimer'
 
-export class KaxTask<T> {
+export class KaxTask {
   public readonly emitter: KaxTaskEventEmitter = new KaxTaskEventEmitter()
   public static readonly Success: string = 'success'
   public static readonly Failure: string = 'failure'

@@ -1,8 +1,6 @@
-import 'mocha'
+import { assert } from 'chai'
 import { KaxAdvancedRenderer, KaxSimpleRenderer } from '../src/renderers'
 import { getDefaultRenderer } from '../src'
-
-const { assert } = require('chai')
 
 describe('Default renderer based on environment', () => {
   let envCi, envTerm
