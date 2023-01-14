@@ -29,13 +29,7 @@ jobs:
       - run: npm version ${{ github.event.inputs.type }}
       - run: git push --follow-tags
       - run: echo "VERSION=$(npm -s run env echo '$npm_package_version')" >> $GITHUB_ENV
-      - name: Create Release Notes
-        uses: actions/github-script@v6
+      - uses: softprops/action-gh-release@v1
         with:
-          script: |
-            await github.request(`POST /repos/${{ github.repository }}/releases`, {
-              draft: true,
-              generate_release_notes: true,
-              name: "${{ env.VERSION }}",
-              tag_name: "v${{ env.VERSION }}"
-            });
+          draft: true
+          generate_release_notes: true
