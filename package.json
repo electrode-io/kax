@@ -8,7 +8,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "tsc -p tsconfig.build.json",
     "lint": "eslint .",
     "prepublishOnly": "npm run build",
     "test": "mocha -r ts-node/register test/*.ts"
