@@ -1,2 +1,2 @@
-export { KaxSimpleRenderer } from './KaxSimpleRenderer'
-export { KaxAdvancedRenderer } from './KaxAdvancedRenderer'
+export { KaxAdvancedRenderer } from './KaxAdvancedRenderer';
+export { KaxSimpleRenderer } from './KaxSimpleRenderer';

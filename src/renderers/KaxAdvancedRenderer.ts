@@ -1,27 +1,30 @@
+import cliSpinners from 'cli-spinners';
+import logSymbols from 'log-symbols';
+import logUpdate from 'log-update';
+
+import { KaxTask } from '../KaxTask';
 import {
   KaxRenderer,
-  KaxRendererOptions,
   kaxRendererDefaultOptions,
-} from '../types'
-import { formatLine } from '../utils'
-import { KaxTask } from '../KaxTask'
-import logUpdate from 'log-update'
-import logSymbols from 'log-symbols'
-import cliSpinners from 'cli-spinners'
+  KaxRendererOptions,
+} from '../types';
+import { formatLine } from '../utils';
 
 export class KaxAdvancedRenderer implements KaxRenderer {
-  private readonly _opts: KaxRendererOptions
-  private readonly _lines
-  private _curLevel: number
+  private readonly _opts: KaxRendererOptions;
+
+  private readonly _lines;
+
+  private _curLevel: number;
 
   public constructor(opts: KaxRendererOptions = kaxRendererDefaultOptions) {
-    this._opts = opts
-    this._lines = []
-    this._curLevel = 0
+    this._opts = opts;
+    this._lines = [];
+    this._curLevel = 0;
   }
 
   public render() {
-    logUpdate(this._lines.join('\n'))
+    logUpdate(this._lines.join('\n'));
   }
 
   private formatLineInternal(
@@ -31,10 +34,10 @@ export class KaxAdvancedRenderer implements KaxRenderer {
       symbol,
       time,
     }: {
-      color?: string
-      symbol?: string
-      time?: string
-    } = {}
+      color?: string;
+      symbol?: string;
+      time?: string;
+    } = {},
   ): string {
     return formatLine(msg, {
       color: color && this._opts.colorScheme && this._opts.colorScheme[color],
@@ -46,7 +49,7 @@ export class KaxAdvancedRenderer implements KaxRenderer {
       indent: this._curLevel * 2,
       symbolizeMultiLine: this._opts.symbolizeMultiLine,
       time,
-    })
+    });
   }
 
   public renderWarning(msg: string) {
@@ -54,28 +57,28 @@ export class KaxAdvancedRenderer implements KaxRenderer {
       this.formatLineInternal(msg, {
         color: 'warning',
         symbol: 'warning',
-      })
-    )
-    this.render()
+      }),
+    );
+    this.render();
   }
 
   public renderInfo(msg: string) {
     this._lines.push(
-      this.formatLineInternal(msg, { color: 'info', symbol: 'info' })
-    )
-    this.render()
+      this.formatLineInternal(msg, { color: 'info', symbol: 'info' }),
+    );
+    this.render();
   }
 
   public renderError(msg: string) {
     this._lines.push(
-      this.formatLineInternal(msg, { color: 'error', symbol: 'error' })
-    )
-    this.render()
+      this.formatLineInternal(msg, { color: 'error', symbol: 'error' }),
+    );
+    this.render();
   }
 
   public renderRaw(msg: string) {
-    this._lines.push(msg)
-    this.render()
+    this._lines.push(msg);
+    this.render();
   }
 
   public renderTask(msg: string, task: KaxTask) {
@@ -85,26 +88,26 @@ export class KaxAdvancedRenderer implements KaxRenderer {
           color: 'task',
           symbol: 'taskRunning',
           time: this._opts.shouldLogTime ? task.timer.toString() : undefined,
-        })
-      ) - 1
-    let curFrameIdx = 0
-    const curCapturedLevel = this._curLevel
+        }),
+      ) - 1;
+    let curFrameIdx = 0;
+    const curCapturedLevel = this._curLevel;
     const interval = setInterval(() => {
       curFrameIdx =
         ++curFrameIdx %
-        cliSpinners[this._opts.symbolScheme!.taskRunning!].frames.length
+        cliSpinners[this._opts.symbolScheme!.taskRunning!].frames.length;
       const frame =
-        cliSpinners[this._opts.symbolScheme!.taskRunning!].frames[curFrameIdx]
+        cliSpinners[this._opts.symbolScheme!.taskRunning!].frames[curFrameIdx];
       this._lines[linesIdx] = formatLine(msg, {
         color: this._opts.colorScheme && this._opts.colorScheme.task,
         symbol: frame,
         indent: curCapturedLevel * 2,
         symbolizeMultiLine: this._opts.symbolizeMultiLine,
         time: this._opts.shouldLogTime ? task.timer.toString() : undefined,
-      })
-      this.render()
-    }, cliSpinners[this._opts.symbolScheme!.taskRunning!].interval)
-    this._curLevel++
+      });
+      this.render();
+    }, cliSpinners[this._opts.symbolScheme!.taskRunning!].interval);
+    this._curLevel++;
     task.emitter.on(KaxTask.Success, (m?: string) => {
       this._lines[linesIdx] = formatLine(m || msg, {
         color: this._opts.colorScheme && this._opts.colorScheme.task,
@@ -115,9 +118,9 @@ export class KaxAdvancedRenderer implements KaxRenderer {
         indent: curCapturedLevel * 2,
         symbolizeMultiLine: this._opts.symbolizeMultiLine,
         time: this._opts.shouldLogTime ? task.timer.toString() : undefined,
-      })
-      this.render()
-    })
+      });
+      this.render();
+    });
     task.emitter.on(KaxTask.Failure, (m?: string) => {
       this._lines[linesIdx] = formatLine(m || msg, {
         color: this._opts.colorScheme && this._opts.colorScheme.task,
@@ -128,16 +131,17 @@ export class KaxAdvancedRenderer implements KaxRenderer {
         indent: curCapturedLevel * 2,
         symbolizeMultiLine: this._opts.symbolizeMultiLine,
         time: this._opts.shouldLogTime ? task.timer.toString() : undefined,
-      })
-      this.render()
-    })
+      });
+      this.render();
+    });
     task.emitter.on(KaxTask.Completed, () => {
-      this._curLevel--
-      clearInterval(interval)
-    })
+      this._curLevel--;
+      clearInterval(interval);
+    });
     task.emitter.on(KaxTask.TextUpdated, (m: string) => {
-      msg = m
-    })
-    this.render()
+      // eslint-disable-next-line no-param-reassign
+      msg = m;
+    });
+    this.render();
   }
 }

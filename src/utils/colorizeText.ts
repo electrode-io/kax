@@ -1,3 +1,3 @@
-import chalk from 'chalk'
+import chalk from 'chalk';
 
-export const colorizeText = (color: string, text: string) => chalk[color](text)
+export const colorizeText = (color: string, text: string) => chalk[color](text);

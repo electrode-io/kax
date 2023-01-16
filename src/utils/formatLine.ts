@@ -1,9 +1,10 @@
-import { colorizeText } from './colorizeText'
-import { symbolizeText } from './symbolizeText'
-import indentString from 'indent-string'
-import chalk from 'chalk'
+import chalk from 'chalk';
+import indentString from 'indent-string';
 
-export function formatLine(
+import { colorizeText } from './colorizeText';
+import { symbolizeText } from './symbolizeText';
+
+export const formatLine = (
   msg: string,
   {
     color,
@@ -12,25 +13,25 @@ export function formatLine(
     symbolizeMultiLine,
     time,
   }: {
-    color?: string
-    symbol?: string
-    indent?: number
-    symbolizeMultiLine?: boolean
-    time?: string
-  } = {}
-): string {
-  let result = msg
+    color?: string;
+    symbol?: string;
+    indent?: number;
+    symbolizeMultiLine?: boolean;
+    time?: string;
+  } = {},
+): string => {
+  let result = msg;
   if (color) {
-    result = colorizeText(color, result)
+    result = colorizeText(color, result);
   }
   if (symbol) {
-    result = symbolizeText(symbol, result, { symbolizeMultiLine })
+    result = symbolizeText(symbol, result, { symbolizeMultiLine });
   }
   if (time) {
-    result += chalk.dim(` ${time}`)
+    result += chalk.dim(` ${time}`);
   }
   if (indent) {
-    result = indentString(result, indent)
+    result = indentString(result, indent);
   }
-  return result
-}
+  return result;
+};
