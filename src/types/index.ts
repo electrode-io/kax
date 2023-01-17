@@ -61,6 +61,6 @@ export interface KaxRenderer {
   renderWarning(msg: string);
   renderInfo(msg: string);
   renderError(msg: string);
-  renderTask(msg: string, task: KaxTask);
+  renderTask<T>(msg: string, task: KaxTask<T>);
   renderRaw(msg: string);
 }

@@ -1,7 +1,8 @@
 import { KaxTaskEventEmitter } from './KaxTaskEventEmitter';
 import { KaxTimer } from './KaxTimer';
 
-export class KaxTask {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export class KaxTask<T> {
   public readonly emitter: KaxTaskEventEmitter = new KaxTaskEventEmitter();
 
   public static readonly Success: string = 'success';
@@ -14,6 +15,7 @@ export class KaxTask {
 
   private _kaxTimer: KaxTimer = new KaxTimer().start();
 
+  // eslint-disable-next-line @typescript-eslint/no-shadow
   public async run<T>(
     task: Promise<T>,
     {
